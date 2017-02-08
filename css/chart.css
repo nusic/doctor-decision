@@ -1,0 +1,184 @@
+html{
+
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 300;
+	fill: #242424;
+	padding: 20px
+}
+
+h1 {
+	padding-right: 100px;
+}
+
+a:hover {
+	cursor: pointer;
+	color: #999;
+}
+
+.legend {
+	font-family: 'Raleway', sans-serif;
+	fill: #333333;
+}
+
+.tooltip {
+	fill: #333333;
+}
+
+button {
+	border: none;
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 12px;
+    width: 110px;
+}
+
+#save-btn {
+	position: fixed;
+	top: 35px;
+	right: 50px;
+ 	background-color: #4CAF50; /* Green */   
+}
+
+#clear-btn {
+	position: fixed;
+	top: 175px;
+	right: 50px;
+ 	background-color: #AF504C;
+ 	display: none;
+}
+
+
+#parameter-container {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	min-height: 400px;
+	min-width: 800px;
+	border-top: 1px solid lightgray;
+	/*border-bottom: 1px solid lightgray;*/
+	overflow: hidden;
+}
+
+#parameter-container-left{
+	display: inline;
+	text-align: right;
+	float: left;
+	width: 275px;
+}
+
+#list-delete: {
+	font-size: 20px;
+}
+
+#new-parameter {
+	width: 100px;
+}
+
+#parameter-comparison{ 
+	display: inline-block;
+}
+
+.comparison {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	width: 400px;
+}
+
+.comp-left {
+	float: left;
+	width: 100px;
+}
+.comp-right {
+	float: right;
+	width: 100px;
+	text-align: left;
+}
+
+.comp-label {
+	display: none;
+	text-align: left;
+	position: relative;
+	background-color: white;
+	z-index: 1;
+	width: 250px;
+	left: 125px;
+	top: 0px;
+}
+
+input[type="range"] {
+	width: 150px;
+	margin-right: 25px;
+	margin-left: 25px;
+}
+
+input[type="text"] {
+	margin-bottom: 50px;
+}
+
+#parameter-chart{
+	position: absolute; left: 350px; top: 50px;
+	text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+	float: left;
+	padding-left: 100px;
+}
+
+
+
+
+#choice-container {
+	margin-top: 20px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	min-height: 400px;
+	border-top: 1px solid lightgray;
+	/*border-bottom: 1px solid lightgray;*/
+	overflow: hidden
+}
+
+#choice-container-left {
+	display: inline;
+	text-align: right;
+	float: left;
+	width: 275px;
+}
+
+.choice-label{
+	/*
+	text-align: left;
+	padding-left: 125px;
+	*/
+	text-align: center;
+	padding-left: 125px;
+	margin-bottom: 5px;
+	padding-top: 5px;
+}
+
+#choice-chart{
+	margin-top: 30px;
+	position: absolute; left: 350px; top: 50px;
+	text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+	float: left;
+	padding-left: 100px;
+}
+
+#choice-chart-legend{
+	position: absolute;
+	top: 30px;
+	left: 550px;
+	width: 200px;
+	text-align: left;
+}
+
+
+#result-container{
+	text-align: center;
+	border-top: 1px solid lightgray;
+	font-size: 30px;
+	bottom: 0px;
+	width: 100%;
+}

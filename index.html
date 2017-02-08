@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Doctor Decision</title>
+
+	<meta charset="UTF-8">
+
+	<!-- Styles --> 
+	<link href='css/chart.css' rel='stylesheet' type='text/css'>
+
+	<!-- Google fonts -->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+
+	<!-- D3.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+		
+	<!-- jQuery --> 
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="js/utils.js"></script>
+
+	<!-- models -->
+	<script type="text/javascript" src="js/model/ahp.js"></script>
+	<script type="text/javascript" src="js/model/url_state_encoder.js"></script>
+
+	<!-- views --> 
+	<script type="text/javascript" src="js/view/radar_chart_view.js"></script>
+	<script type="text/javascript" src="js/view/parameter_view.js"></script>
+	<script type="text/javascript" src="js/view/choice_view.js"></script>
+	<script type="text/javascript" src="js/view/result_view.js"></script>
+
+	<!-- controllers --> 
+	<script type="text/javascript" src="js/controller/main_controller.js"></script>
+
+
+
+</head>
+<body>
+	
+	<h1>Doctor Decision &nbsp;&nbsp;
+		<span style="font-size: 12px;white-space: nowrap;">
+			/ your friend in tough decisions? Yes? No? maybe.
+		</span>
+	</h1>
+
+	<button id="save-btn" onclick='onSave()'>
+		Save to URL
+	</button>
+
+	<button id="clear-btn" onclick='onNew()'>
+		Clear
+	</button>
+
+	<div id="parameter-container">
+		<h3>Enter things that matter to your decision</h3>
+		<div id="parameter-container-left">
+			<div id="parameter-list"></div>
+			<form onsubmit="return addParameter();">
+				<span>Add something valuable: </span><input type="text" id="new-parameter" autocomplete="off">
+			</form>	
+			<div id="parameter-comparison"></div>
+		</div>
+		<div id="parameter-chart"></div>
+	</div>
+
+
+	<div id="choice-container">
+		<h3>Enter your alternatives</h3>
+		<div id="choice-container-left">
+			<div id="choice-list"></div>
+			<form onsubmit="return addChoice();">
+				<span>Add alternative: </span><input type="text" id="new-choice" autocomplete="off">
+			</form>	
+			<div id="choice-comparison"></div>
+		</div>
+		<div id="choice-chart"></div>
+	</div>
+
+	<div id="result-container">
+		
+	</div>
+
+<script type="text/javascript">
+
+	var newParameterInput = document.getElementById('new-parameter');
+	var newChoiceInput = document.getElementById('new-choice');
+
+	function addParameter(){
+		if(newParameterInput.value){
+			mainController.addParameter(newParameterInput.value);
+		}
+		newParameterInput.value = '';
+		return false; // Prevent scroll to top
+	}
+
+	function addChoice(e){
+		if(newChoiceInput.value){
+			mainController.addChoice(newChoiceInput.value);
+		}
+		newChoiceInput.value = '';
+		return false; // Prevent scroll to top
+	}
+
+	function onSave(e){
+		console.log('save!');
+		mainController.updateWindowHash();
+	}
+
+	function onNew(e){
+		console.log('new');
+		var hp = window.location.href.indexOf('#');
+		window.location.href = window.location.href.substr(0, hp);
+	}
+
+
+	// chart setup
+	var margin = {top: 100, right: 100, bottom: 100, left: 100},
+		width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
+		height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+
+	//margin = {top: 50, right: 50, bottom: 50, left: 50};
+	width = 300;
+	height = 300;
+
+	var parameterChart = new ChartView($('#parameter-chart'), {
+		w: width,
+		h: height,
+		margin: margin,
+		maxValue: function(data){return 2.5 / data[0].length;},
+		levels: 5,
+		roundStrokes: true,
+		color: d3.scale.ordinal().range(["#51C9ED"]),
+	});
+
+	var choiceChart = new ChartView($('#choice-chart'), {
+		w: width,
+		h: height,
+		margin: margin,
+		maxValue: function(data){return 2.5 / data.length;},
+		levels: 5,
+		roundStrokes: true,
+		//color: d3.scale.ordinal().range(companyColors)
+	});
+
+	
+	var preferenceTexts = ['equally preferred', 'moderately preferred', 'preferred', 'strongly preferred', 'extremely preferred'];
+	var inputResolution = 8;
+
+
+	var ahpDecision = new AhpDecision();
+	//ahpDecision = logging(ahpDecision);
+
+
+	var parameterListView = new ListView($('#parameter-list'), 'param-');
+	var parameterComparisonView = new ParameterComparisonView($('#parameter-comparison'), 
+		inputResolution, 2, preferenceTexts);
+	var parameterView = new ParameterView($('#parameter-container'), ahpDecision.ahp, 
+		parameterListView, parameterComparisonView, parameterChart);
+
+	var choiceListView = new ListView($('#choice-list'));
+	var choiceComparisonView = new ChoiceComparisonView($('#choice-comparison'), 
+		ahpDecision.decision, inputResolution, 6, preferenceTexts);
+	var choiceView = new ChoiceView($('#choice-container'), ahpDecision.decision, 
+		choiceListView, choiceComparisonView, choiceChart);
+
+	var resultView = new ResultView($('#result-container'), ahpDecision);
+
+	var urlState = new BasicUrlState();
+	var mainController = new MainController(ahpDecision, parameterView, choiceView, resultView, urlState);
+
+
+	$(window).on('scroll', mainController.onScroll);
+
+	
+	var fp = window.location.href.indexOf('index.html');
+	if(window.location.href.substr(fp+10).length < 2){
+		window.location.href = window.location.href.substr(0, fp+10) + '?#';
+	}
+
+	if(window.location.hash){
+		var stateString = window.location.hash.substr(1);
+
+		try{
+			mainController.setFromCompactState(stateString);
+			console.log('Loaded successfully!');
+		}catch(e){
+			success = false;
+			console.log('Could not init from window hash');
+			console.error(e);
+		}
+	}
+	else{
+		console.log('no hash');
+	}
+	
+</script>
+	
+</body>
+</html>
